@@ -11,9 +11,9 @@ GTP-U tunnel interfaces along with the slices on the UE side like
 the following example.
 
 * ens3
-    * 192.168.1.1/24 (default route. Used for Radio Link Emulation traffic)
+    * 192.168.1.1/24 (default route. Used for Radio Link Simulation traffic)
 * uesimtun0
-    * 10.1.1.1/32  (from tac#1/slice#2 pool - 10.1.1.0/24)
+    * 10.1.1.1/32  (from tac#1/slice#1 pool - 10.1.1.0/24)
 * uesimtun1
     * 10.1.2.1/32  (from tac#1/slice#2 pool - 10.1.2.0/24)
 
@@ -22,7 +22,7 @@ one slice (e.g., slice#1 through uesimtun0) for latency sensitive applications
 and another slice (e.g., slice#2 through uesimtun1) for bandwidth sensitive
 applications.
 
-One typical resolution is to use routing function such as statie route.
+One typical resolution is to use kernel level routing function such as statie route.
 Indeed the static route resolution works fine, but it's inconvenient
 in several situations. For example, when:
 
@@ -34,7 +34,7 @@ Alternatively, you can modify your application, but it's also not always
 possible. Or maybe your application have a feature specifying
 local IP address (or corresponding interfaces) like 'ping -I' or 'ssh -B'.
 
-This tool can be used for those situations in generic way.
+This tool can be used for those situations in a generic way.
 
 
 ## How it Works
@@ -42,10 +42,17 @@ This tool can be used for those situations in generic way.
 mslice uses a classical technique to hook function calls at binary level
 using LD_PRELOAD environment variable.
 
-mslice inserts a hoook for connect(2) system call and checks, and
-if the destination IP address belongs to the specified target network address.
+mslice inserts a hook for connect(2) system call and checks
+if the destination IP address belongs to the specified target network address
+on connect(2) invocation.
 If it is, mslice calls bind(2) using the specified local binding address, and
-finally calles the original connect(2).
+finally calls the original connect(2).
+
+## Build
+
+Just 'make', and 'libmslice.so' will be generated.
+
+I tested on my Ubuntu 22.04(amd64/arm64) boxes.
 
 ## Usage
 
@@ -64,7 +71,7 @@ Use ',' (comma) for destination CIDR local bind address separator, and
        LD_PRELOAD=./libmslice.so SOME_PROGRAM (e.g., curl)
 ```
 
-For debug usage, set any value to MSLICE_DEBUG environment variable.
+For debug usage, set non zero integer to MSLICE_DEBUG environment variable.
 
 ## Restrictions/TODO
 * Support IPv6
