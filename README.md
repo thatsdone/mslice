@@ -22,7 +22,7 @@ one slice (e.g., slice#1 through uesimtun0) for latency sensitive applications
 and another slice (e.g., slice#2 through uesimtun1) for bandwidth sensitive
 applications.
 
-One typical resolution is to use kernel level routing function such as statie route.
+One typical resolution is to use kernel level routing function such as static route.
 Indeed the static route resolution works fine, but it's inconvenient
 in several situations. For example, when:
 
